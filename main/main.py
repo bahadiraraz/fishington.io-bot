@@ -44,15 +44,14 @@ while True:
 			"height": 100,
 		}
 	)
-
 	frame = np.array(scr)
 	hsvframe = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-	red_lower = np.array([0, 50, 50], np.uint8)
+	red_lower = np.array([0, 150, 150], np.uint8)
 	red_upper = np.array([10, 255, 255], np.uint8)
 	red_mask = cv2.inRange(hsvframe, red_lower, red_upper)
 
-	green_lower = np.array([40, 40, 40], np.uint8)
+	green_lower = np.array([40, 200, 150], np.uint8)
 	green_upper = np.array([70, 255, 255], np.uint8)
 	green_mask = cv2.inRange(hsvframe, green_lower, green_upper)
 
