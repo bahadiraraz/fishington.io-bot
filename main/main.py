@@ -8,6 +8,7 @@ from pynput.mouse import Button, Controller
 
 mouse = Controller()
 stc = mss.mss()
+flag = True
 
 
 def loop():
@@ -28,6 +29,8 @@ def loop():
 			time.sleep(2)
 			mouse.release(Button.left)
 		time.sleep(1.5)
+		if flag == False:
+			break
 
 
 threading.Thread(target=loop).start()
@@ -99,24 +102,22 @@ while True:
 		if 600 > area2 > 100:
 			x1, y1, w1, h1 = cv2.boundingRect(contour)
 			frame_red = cv2.rectangle(
-				frame, (x1, y1), (x1 + w1, y1 + h1), (255, 255, 255), 2
+				frame, (x1, y1), (x1 + w1, y1 + h1), (0, 34, 255), 2
 			)
 			x_red2 = int(x1 + w1 / 2)
 			y_red2 = int(y1 + h1 / 2)
-			cv2.circle(frame, (x_red2, y_red2), 3, (255, 255, 255), -1)
+			cv2.circle(frame, (x_red2, y_red2), 3, (0, 34, 255), -1)
 			cv2.putText(
 				frame,
 				"hook",
 				(x1 + w1, y1 + h1),
 				cv2.FONT_HERSHEY_SIMPLEX,
 				0.7,
-				(255, 255, 255),
+				(0, 34, 255),
 			)
 			try:
 				distance = int(np.sqrt((x_red2 - x_red1) ** 2 + (y_red2 - y_red1) ** 2))
-				distance2 = int(
-					np.sqrt((x_red2 - x_green) ** 2 + (y_red2 - y_green) ** 2)
-				)
+				distance2 = int(np.sqrt((x_red2 - x_green) ** 2 + (y_red2 - y_green) ** 2))
 				if not np.array_equal(frame_red, frame_green) and distance > 65:
 					cv2.putText(
 						frame,
@@ -221,14 +222,11 @@ while True:
 		cv2.putText(
 			frame, "not hooked", (320, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255)
 		)
-	cv2.imshow("frame", frame)
-	cv2.imshow("red", res_red)
-	cv2.imshow("green", res_green)
-	cv2.setWindowProperty("frame", cv2.WND_PROP_TOPMOST, 1)
-	cv2.setWindowProperty("red", cv2.WND_PROP_TOPMOST, 1)
-	cv2.setWindowProperty("green", cv2.WND_PROP_TOPMOST, 1)
+	cv2.imshow("main", frame)
+	cv2.setWindowProperty("main", cv2.WND_PROP_TOPMOST, 1)
 
 	if cv2.waitKey(1) & 0xFF == ord("q"):
 		cv2.destroyAllWindows()
 		cv2.waitKey(1)
+		flag = False
 		sys.exit()
