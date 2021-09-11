@@ -18,6 +18,35 @@ class Fisher:
         self.bar_top = 0
         self.bar_left = 0
 
+    def Set_Bobber(self):
+        while True:
+            self.Click_Location(800,800,2)
+            print("finding Bobber")
+            img = self.Screen_Shot()
+            bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
+            result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
+            _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+            if max_val > .9:
+                print("Found it waiting... 5 don't Click!")
+                new_max = max_loc
+                time.sleep(5)
+                img = self.Screen_Shot()
+                bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
+                result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
+                _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+                if max_val > .9:
+                    print("Updating max")
+                    new_max = max_loc
+                bar_top = new_max[1]
+                bar_left = new_max[0]
+                return bar_left, bar_top
+
+            print(f"Current Max: {max_val} sleeping")
+            time.sleep(7)
+            self.Click_Location(800,800,.5)
+            time.sleep(.5)
+
+
     def Sell_Fish(self):
 
         # Get to store if we are not there...

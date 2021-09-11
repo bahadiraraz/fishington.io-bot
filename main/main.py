@@ -5,6 +5,7 @@ import numpy as np
 import mss
 from pynput.mouse import Button, Controller
 import os
+from bot import Fisher
 
 # Some images we will use to dynamically find catch bar
 #dirname = os.path.dirname(__file__)
@@ -37,34 +38,8 @@ def Throw_Line(left=800, top=800, wait=2):
 
 
 # Need a dynamic way to find bar location.
-bar_top = 0
-bar_left = 0
-print("Getting ready to throw line...")
-time.sleep(5)
-while bar_top == 0 and bar_left == 0:
-	Throw_Line()
-	print("finding Bobber")
-	img = Screen_Shot()
-	bobber_img = cv2.imread(os.path.join(img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
-	result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
-	_, max_val, _, max_loc = cv2.minMaxLoc(result_try)
-	if max_val > .9:
-		print("Found it waiting... 5 don't Click!")
-		new_max = max_loc
-		time.sleep(5)
-		img = Screen_Shot()
-		bobber_img = cv2.imread(os.path.join(img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
-		result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
-		_, max_val, _, max_loc = cv2.minMaxLoc(result_try)
-		if max_val > .9:
-			print("Updating max")
-			new_max = max_loc
-		bar_top = max_loc[1]
-		bar_left = max_loc[0]
-
-	print(f"Current Max: {max_val} sleeping")
-	time.sleep(5)
-	mouse.press(Button.left)
+fisher = Fisher()
+bar_left, bar_top = fisher.Set_Bobber()
 
 print(bar_left, bar_top)
 while True:
