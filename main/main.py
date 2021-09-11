@@ -3,43 +3,75 @@ import time
 from cv2 import cv2
 import numpy as np
 import mss
-import threading
 from pynput.mouse import Button, Controller
+import os
+
+# Some images we will use to dynamically find catch bar
+#dirname = os.path.dirname(__file__)
+path = os.path.dirname(os.path.dirname(__file__))
+img_path = os.path.join(path, 'img')
+
 
 mouse = Controller()
 stc = mss.mss()
 flag = True
 
+def Screen_Shot(left=0, top=0, width=1920, height=1080):
+	scr = stc.grab({
+		'left': left,
+		'top': top,
+		'width': width,
+		'height': height
+	})
 
-def loop():
-	while True:
-		rgb1 = stc.grab({"top": 424, "left": 1001, "width": 1, "height": 1}).pixel(0, 0)
-		rgb2 = stc.grab({"top": 617, "left": 1173, "width": 1, "height": 1}).pixel(0, 0)
-		if rgb1[0] == 255:
-			time.sleep(0.5)
-			mouse.click(Button.left, 1)
-			mouse.release(Button.left)
-		if rgb2[0] == 250:
-			time.sleep(1)
-			mouse.position = (1173, 617)
-			mouse.click(Button.left, 2)
-			time.sleep(1)
-			mouse.position = (764, 741)
-			mouse.press(Button.left)
-			time.sleep(2)
-			mouse.release(Button.left)
-		time.sleep(1.5)
-		if flag == False:
-			break
+	img = np.array(scr)
+	img = cv2.cvtColor(img, cv2.IMREAD_COLOR)
+
+	return img
+
+def Throw_Line(left=800, top=800, wait=2):
+	mouse.position = (left, top)
+	mouse.press(Button.left)
+	time.sleep(2)
+	mouse.release(Button.left)
 
 
-threading.Thread(target=loop).start()
+# Need a dynamic way to find bar location.
+bar_top = 0
+bar_left = 0
+print("Getting ready to throw line...")
+time.sleep(5)
+while bar_top == 0 and bar_left == 0:
+	Throw_Line()
+	print("finding Bobber")
+	img = Screen_Shot()
+	bobber_img = cv2.imread(os.path.join(img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
+	result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
+	_, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+	if max_val > .9:
+		print("Found it waiting... 5 don't Click!")
+		new_max = max_loc
+		time.sleep(5)
+		img = Screen_Shot()
+		bobber_img = cv2.imread(os.path.join(img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
+		result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
+		_, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+		if max_val > .9:
+			print("Updating max")
+			new_max = max_loc
+		bar_top = max_loc[1]
+		bar_left = max_loc[0]
 
+	print(f"Current Max: {max_val} sleeping")
+	time.sleep(5)
+	mouse.press(Button.left)
+
+print(bar_left, bar_top)
 while True:
 	scr = stc.grab(
 		{
-			"left": 764,
-			"top": 741,
+			"left": bar_left,
+			"top": bar_top,
 			"width": 500,
 			"height": 100,
 		}
@@ -224,6 +256,7 @@ while True:
 	cv2.imshow("main", frame)
 	cv2.setWindowProperty("main", cv2.WND_PROP_TOPMOST, 1)
 
+	# Press q to quit program
 	if cv2.waitKey(1) & 0xFF == ord("q"):
 		cv2.destroyAllWindows()
 		cv2.waitKey(1)
