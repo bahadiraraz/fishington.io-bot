@@ -17,19 +17,56 @@ class Fisher:
 
         self.bar_top = 0
         self.bar_left = 0
+        self.fish_count = 2
+        self.keep_fishing = True
+
+    def fish(self):
+        while self.keep_fishing:
+            if self.close_caught_fish():
+                # We caught a fish
+                self.fish_count += 1
+                print(f"Fish Count: {self.fish_count}")
+            if self.is_bobber():
+                print("FISH on SLEEPING!")
+                time.sleep(10)
+                continue
+            if self.fish_count > 1:
+                    self.Sell_Fish()
+                    continue
+            #Reset click
+            self.Click_Location(800,800)
+            time.sleep(1)
+            self.Click_Location(800,800,1)
+            print("Throwing line")
+            time.sleep(11)
+            self.Click_Location(800,800,.5)
+            time.sleep(.5)
+
+    def is_bobber(self):
+        img = self.Screen_Shot()
+        bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
+        result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+        if max_val > .9:
+            return True
+        else:
+            return False
 
     def Set_Bobber(self):
         while True:
-            self.Click_Location(800,800,2)
+            print("Reset Click.")
+            self.Click_Location(800,800)
+            time.sleep(.5)
+            self.Click_Location(800,800,1)
             print("finding Bobber")
             img = self.Screen_Shot()
             bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
             result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
             _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
             if max_val > .9:
-                print("Found it waiting... 5 don't Click!")
+                print("Found it waiting... 3 don't Click!")
                 new_max = max_loc
-                time.sleep(5)
+                time.sleep(3)
                 img = self.Screen_Shot()
                 bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
                 result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
@@ -37,15 +74,23 @@ class Fisher:
                 if max_val > .9:
                     print("Updating max")
                     new_max = max_loc
-                bar_top = new_max[1]
+                bar_top = new_max[1] - 20
                 bar_left = new_max[0]
                 return bar_left, bar_top
 
             print(f"Current Max: {max_val} sleeping")
-            time.sleep(7)
+            time.sleep(11)
             self.Click_Location(800,800,.5)
             time.sleep(.5)
 
+    def close_caught_fish(self):
+        max_loc, max_val = self.Template_Match("YellowX.jpg", self.Screen_Shot())
+        if max_val > .9:
+            print("Pushing YellowX") 
+            self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
+            # Means we caught a fish
+            return True
+        return False
 
     def Sell_Fish(self):
 
@@ -70,23 +115,35 @@ class Fisher:
             if max_val > .9:
                 print("Pushing Sell") 
                 self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
+                self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
 
                 time.sleep(1)
                 print("Looking to for sell Green")
                 max_loc, max_val = self.Template_Match("Sell.jpg", self.Screen_Shot())
-                if max_val > .9:
+                while max_val > .9:
                     print("Pushing Sell Green")
                     self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
-
+                    self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
+                    
+                    self.Click_Location(max_loc[0] + 10, max_loc[1] + 10,.1)
                     # Get all the way through we return True for sold something
+                    max_loc, max_val = self.Template_Match("Sell.jpg", self.Screen_Shot())
                     time.sleep(1)
-                    return True
+                    self.fish_count = 0
         self.Click_Location(200,200)
         self.Click_Location(200,200)
-        return False
+        # Go back fishing...
+        self.keyboard.press(keyboard.Key.down)
+        time.sleep(1)
+        self.keyboard.release(keyboard.Key.down)
+
+        self.keyboard.press(keyboard.Key.down)
+        time.sleep(1)
+        self.keyboard.release(keyboard.Key.down)
     
     def Screen_Shot(self, left=0, top=0, width=1920, height=1080):
-        scr = self.stc.grab({
+        stc = mss.mss()
+        scr = stc.grab({
             'left': left,
             'top': top,
             'width': width,
@@ -116,5 +173,5 @@ class Fisher:
 if __name__ == "__main__":
     fisher = Fisher()
     time.sleep(5)
-    while fisher.Sell_Fish():
-        print("Selling Fish")
+    fisher.Sell_Fish()
+    #fisher.close_caught_fish() 
