@@ -49,15 +49,17 @@ while True:
 	stc = mss.mss()
 	scr = stc.grab(
 		{
-			"left": bar_left,
+			"left": bar_left-300,
 			"top": bar_top,
-			"width": 500,
+			"width": 800,
 			"height": 100,
 		}
 	)
 	frame = np.array(scr)
 	hsvframe = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
+	if fisher.fish_count >= fisher.fish_limit:
+		time.sleep(10)
+		continue
 	red_lower = np.array([0, 150, 150], np.uint8)
 	red_upper = np.array([10, 255, 255], np.uint8)
 	red_mask = cv2.inRange(hsvframe, red_lower, red_upper)
