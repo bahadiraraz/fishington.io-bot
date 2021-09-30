@@ -4,6 +4,9 @@
 
 ![botss](https://user-images.githubusercontent.com/48323786/132136574-7aab9df9-e19a-4fcf-ab8e-90d9c45ab57c.gif)
 
+# video link
+ - https://www.youtube.com/watch?v=X2bRXcCvmKY&ab_channel=ClarityCoders
+
 # how to use 
  - Open cmd in fishington.io-bot folder and type pip install -r requirements.txt
  - select main window and  press q to exit
