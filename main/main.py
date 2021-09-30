@@ -3,50 +3,63 @@ import time
 from cv2 import cv2
 import numpy as np
 import mss
-import threading
 from pynput.mouse import Button, Controller
+import os
+from bot import Fisher
+import threading
+
+# Some images we will use to dynamically find catch bar
+#dirname = os.path.dirname(__file__)
+path = os.path.dirname(os.path.dirname(__file__))
+img_path = os.path.join(path, 'img')
+
 
 mouse = Controller()
-stc = mss.mss()
 flag = True
 
+def Screen_Shot(left=0, top=0, width=1920, height=1080):
+	stc = mss.mss()
+	scr = stc.grab({
+		'left': left,
+		'top': top,
+		'width': width,
+		'height': height
+	})
 
-def loop():
-	while True:
-		rgb1 = stc.grab({"top": 424, "left": 1001, "width": 1, "height": 1}).pixel(0, 0)
-		rgb2 = stc.grab({"top": 617, "left": 1173, "width": 1, "height": 1}).pixel(0, 0)
-		if rgb1[0] == 255:
-			time.sleep(0.5)
-			mouse.click(Button.left, 1)
-			mouse.release(Button.left)
-		if rgb2[0] == 250:
-			time.sleep(1)
-			mouse.position = (1173, 617)
-			mouse.click(Button.left, 2)
-			time.sleep(1)
-			mouse.position = (764, 741)
-			mouse.press(Button.left)
-			time.sleep(2)
-			mouse.release(Button.left)
-		time.sleep(1.5)
-		if flag == False:
-			break
+	img = np.array(scr)
+	img = cv2.cvtColor(img, cv2.IMREAD_COLOR)
+
+	return img
+
+def Throw_Line(left=800, top=800, wait=2):
+	mouse.position = (left, top)
+	mouse.press(Button.left)
+	time.sleep(2)
+	mouse.release(Button.left)
 
 
-threading.Thread(target=loop).start()
+# Need a dynamic way to find bar location.
+fisher = Fisher()
+fish_thread = threading.Thread(target=fisher.fish)
+bar_left, bar_top = fisher.Set_Bobber()
 
+print(bar_left, bar_top)
+fish_thread.start()
 while True:
+	stc = mss.mss()
 	scr = stc.grab(
 		{
-			"left": 764,
-			"top": 741,
-			"width": 500,
+			"left": bar_left-300,
+			"top": bar_top,
+			"width": 800,
 			"height": 100,
 		}
 	)
 	frame = np.array(scr)
 	hsvframe = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
+	if fisher.fish_count >= fisher.fish_limit:
+		time.sleep(10)
+		continue
 	red_lower = np.array([0, 150, 150], np.uint8)
 	red_upper = np.array([10, 255, 255], np.uint8)
 	red_mask = cv2.inRange(hsvframe, red_lower, red_upper)
@@ -224,7 +237,9 @@ while True:
 	cv2.imshow("main", frame)
 	cv2.setWindowProperty("main", cv2.WND_PROP_TOPMOST, 1)
 
+	# Press q to quit program
 	if cv2.waitKey(1) & 0xFF == ord("q"):
+		fisher.keep_fishing = False
 		cv2.destroyAllWindows()
 		cv2.waitKey(1)
 		flag = False
