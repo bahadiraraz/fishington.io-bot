@@ -1,4 +1,4 @@
-# fishington.io-bot
+# fishington.io-bot lates version
  * fishington.io bot with using OpenCV and NumPy
  * bot can continue to fishing fully automatically
 
