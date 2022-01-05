@@ -78,7 +78,7 @@ class Fisher:
             bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
             result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
             _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
-            trigger = .9
+            trigger = .8
             if max_val > trigger:
                 print(f"Bobber found!! (max: {round(max_val, 3)} / {trigger})")
                 new_max = max_loc
@@ -90,7 +90,7 @@ class Fisher:
 
     def close_caught_fish(self):
         max_loc, max_val = self.Template_Match("YellowX.jpg", self.Screen_Shot())
-        trigger = .9
+        trigger = .8
         if max_val > trigger:
             print(f"Fish found, Pushing Yellow X... (max: {round(max_val, 3)} / {trigger})")
             self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
@@ -112,7 +112,7 @@ class Fisher:
 
         print("Looking for 'Select all' button...")
         max_loc, max_val = self.Template_Match("SellBox.jpg", self.Screen_Shot())
-        trigger = .9
+        trigger = .8
         if max_val > trigger:
             print(f"Button found, Pushing 'Select all' button... (max: {round(max_val, 3)} / {trigger})")
             self.Click_Location(max_loc[0] + 20, max_loc[1] + 30)
@@ -121,14 +121,14 @@ class Fisher:
             time.sleep(1)
             print("Looking for 'SELL FOR' button...")
             max_loc, max_val = self.Template_Match("SellFor.jpg", self.Screen_Shot())
-            trigger = .9
+            trigger = .6
             if max_val > trigger:
                 print(f"Button found, Pushing 'Sell FOR' button... (max: {round(max_val, 3)} / {trigger})")
                 self.Click_Location(max_loc[0] + 40, max_loc[1] + 10)
                 time.sleep(1)
                 print("Looking for green 'SELL' button...")
                 max_loc, max_val = self.Template_Match("Sell.jpg", self.Screen_Shot())
-                trigger = .9
+                trigger = .7
                 if max_val > trigger:
                     print(f"Button found, Pushing green 'SELL' button... (max: {round(max_val, 3)} / {trigger})")
                     self.Click_Location(max_loc[0] + 10, max_loc[1] + 10)
