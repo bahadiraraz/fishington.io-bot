@@ -21,7 +21,7 @@ class Fisher:
         self.bar_top = 0
         self.bar_left = 0
         self.fish_count = 0
-        self.fish_limit = 15
+        self.fish_limit = 16
         self.throw_count = 1
         self.fish_total_count = 0
         self.keep_fishing = True
