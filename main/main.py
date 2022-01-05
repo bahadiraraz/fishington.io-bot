@@ -43,7 +43,7 @@ fisher = Fisher()
 fish_thread = threading.Thread(target=fisher.fish)
 bar_left, bar_top = fisher.Set_Bobber()
 
-print(bar_left, bar_top)
+print("Bobber at", bar_left, bar_top)
 fish_thread.start()
 while True:
 	stc = mss.mss()
