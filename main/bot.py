@@ -47,6 +47,7 @@ class Fisher:
             time.sleep(1)
             self.Click_Location(800 + jitter,800 + jitter,click_time)
             print(f"Throwing line: {self.throw_count} (time: {round(click_time, 3)}s)")
+            self.throw_count += 1
             time.sleep(11)
             self.Click_Location(800 + jitter,800 + jitter,.5)
             time.sleep(.5)
