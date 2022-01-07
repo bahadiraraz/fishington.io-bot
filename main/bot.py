@@ -62,9 +62,10 @@ class Fisher:
                 continue
             # Reset click
             jitter = self.throw_line()
-            time.sleep(11)
-            click_location(800 + jitter, 800 + jitter, .5)
-            time.sleep(.5)
+            time.sleep(3)
+            self.wait_for_fish()
+            click_location(800 + jitter, 800 + jitter)
+            time.sleep(.6)
 
     def throw_line(self):
         jitter = random.randint(-25, 25)
@@ -76,6 +77,18 @@ class Fisher:
         print(f"Throwing line: {self.throw_count} (time: {round(click_time, 3)}s)")
         self.throw_count += 1
         return jitter
+
+    def wait_for_fish(self):
+        seconds = 0
+        while seconds <= 30:
+            ss = screen_shot()
+            _, max_val = self.template_match("exclamation_mark1.jpg", ss)
+            _, max_val2 = self.template_match("exclamation_mark2.jpg", ss)
+            trigger = .7
+            if max_val > trigger or max_val2 > trigger:
+                return
+            time.sleep(1)
+            seconds += 1
 
     def get_bobber_match(self):
         img = screen_shot()
@@ -95,9 +108,10 @@ class Fisher:
 
     def set_bobber(self):
         while True:
-            self.throw_line()
-            time.sleep(11)
-            pydirectinput.click(800, 800)
+            jitter = self.throw_line()
+            time.sleep(3)
+            self.wait_for_fish()
+            pydirectinput.click(800 + jitter, 800 + jitter)
             time.sleep(.6)
             print("Finding Bobber...")
             max_val, max_loc = self.get_bobber_match()
