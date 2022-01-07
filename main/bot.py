@@ -61,23 +61,31 @@ class Fisher:
                 self.sell_fish()
                 continue
             # Reset click
-            jitter = random.randint(-25, 25)
-            cast_jitter = random.random()
-            click_time = .2 + cast_jitter
-            pydirectinput.click(800 + jitter, 800 + jitter)
-            time.sleep(1)
-            click_location(800 + jitter, 800 + jitter, click_time)
-            print(f"Throwing line: {self.throw_count} (time: {round(click_time, 3)}s)")
-            self.throw_count += 1
+            jitter = self.throw_line()
             time.sleep(11)
             click_location(800 + jitter, 800 + jitter, .5)
             time.sleep(.5)
 
-    def is_bobber(self):
+    def throw_line(self):
+        jitter = random.randint(-25, 25)
+        cast_jitter = random.random()
+        click_time = .4 + cast_jitter
+        pydirectinput.click(800 + jitter, 800 + jitter)
+        time.sleep(1)
+        click_location(800 + jitter, 800 + jitter, click_time)
+        print(f"Throwing line: {self.throw_count} (time: {round(click_time, 3)}s)")
+        self.throw_count += 1
+        return jitter
+
+    def get_bobber_match(self):
         img = screen_shot()
         bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
         result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
         _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+        return max_val, max_loc
+
+    def is_bobber(self):
+        max_val, _ = self.get_bobber_match()
         trigger = .8
         if max_val > trigger:
             print(f"FISH on SLEEPING! (max: {round(max_val, 3)} / {trigger})")
@@ -87,19 +95,12 @@ class Fisher:
 
     def set_bobber(self):
         while True:
-            pydirectinput.click(800, 800)
-            time.sleep(.6)
-            click_location(800, 800, 1)
-            print("Throwing line:", self.throw_count)
-            self.throw_count += 1
+            self.throw_line()
             time.sleep(11)
             pydirectinput.click(800, 800)
             time.sleep(.6)
             print("Finding Bobber...")
-            img = screen_shot()
-            bobber_img = cv2.imread(os.path.join(self.img_path, 'bobber.jpg'), cv2.IMREAD_UNCHANGED)
-            result_try = cv2.matchTemplate(img, bobber_img, cv2.TM_CCOEFF_NORMED)
-            _, max_val, _, max_loc = cv2.minMaxLoc(result_try)
+            max_val, max_loc = self.get_bobber_match()
             trigger = .8
             if max_val > trigger:
                 print(f"Bobber found!! (max: {round(max_val, 3)} / {trigger})")
