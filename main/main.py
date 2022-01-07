@@ -9,15 +9,15 @@ from bot import Fisher
 import threading
 
 # Some images we will use to dynamically find catch bar
-#dirname = os.path.dirname(__file__)
+# dirname = os.path.dirname(__file__)
 path = os.path.dirname(os.path.dirname(__file__))
 img_path = os.path.join(path, 'img')
-
 
 mouse = Controller()
 flag = True
 
-def Screen_Shot(left=0, top=0, width=1920, height=1080):
+
+def screen_shot(left=0, top=0, width=1920, height=1080):
 	stc = mss.mss()
 	scr = stc.grab({
 		'left': left,
@@ -31,7 +31,8 @@ def Screen_Shot(left=0, top=0, width=1920, height=1080):
 
 	return img
 
-def Throw_Line(left=800, top=800, wait=2):
+
+def throw_line(left=800, top=800, wait=2):
 	mouse.position = (left, top)
 	mouse.press(Button.left)
 	time.sleep(2)
@@ -43,7 +44,7 @@ time.sleep(5)
 # Need a dynamic way to find bar location.
 fisher = Fisher()
 fish_thread = threading.Thread(target=fisher.fish)
-bar_left, bar_top = fisher.Set_Bobber()
+bar_left, bar_top = fisher.set_bobber()
 
 print("Bobber at", bar_left, bar_top)
 fish_thread.start()
