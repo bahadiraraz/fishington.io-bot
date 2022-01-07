@@ -38,6 +38,8 @@ def Throw_Line(left=800, top=800, wait=2):
 	mouse.release(Button.left)
 
 
+print("Starting in 5 seconds...")
+time.sleep(5)
 # Need a dynamic way to find bar location.
 fisher = Fisher()
 fish_thread = threading.Thread(target=fisher.fish)
