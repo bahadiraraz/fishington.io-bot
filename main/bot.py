@@ -139,7 +139,7 @@ class Fisher:
     def sell_fish(self):
         print("Going to store...")
         self.keyboard.press(keyboard.Key.up)
-        time.sleep(8)
+        time.sleep(6.5)
         self.keyboard.release(keyboard.Key.up)
 
         self.keyboard.press(keyboard.Key.space)
@@ -182,7 +182,7 @@ class Fisher:
         click_location(100, 500)
         print("Going back...")
         self.keyboard.press(keyboard.Key.down)
-        time.sleep(8)
+        time.sleep(6.5)
         self.keyboard.release(keyboard.Key.down)
         self.keyboard.press(keyboard.Key.down)
         time.sleep(2)
