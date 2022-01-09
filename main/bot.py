@@ -46,17 +46,18 @@ class Fisher:
         self.throw_count = 1
         self.fish_total_count = 0
         self.keep_fishing = True
+        self.fish_sold = False
 
     def fish(self):
         while self.keep_fishing:
-            if self.close_caught_fish():
+            if self.is_bobber():
+                time.sleep(5)
+                continue
+            if not self.fish_sold and self.close_caught_fish():
                 # We caught a fish
                 self.fish_count += 1
                 self.fish_total_count += 1
                 print(f"Fish in Basket: {self.fish_count} / {self.fish_limit}, Total Fish Count: {self.fish_total_count}")
-            if self.is_bobber():
-                time.sleep(10)
-                continue
             if self.fish_count >= self.fish_limit:
                 self.sell_fish()
                 continue
@@ -66,6 +67,7 @@ class Fisher:
             self.wait_for_fish()
             click_location(800 + jitter, 800 + jitter)
             time.sleep(.6)
+            self.fish_sold = False
 
     def throw_line(self):
         jitter = random.randint(-25, 25)
@@ -125,7 +127,7 @@ class Fisher:
             else:
                 print(f"Bobber not found yet. (max: {round(max_val, 3)} / {trigger})")
 
-    def close_caught_fish(self):
+    def close_caught_fish(self, repeat=False):
         max_loc, max_val = self.template_match("YellowX.jpg", screen_shot())
         trigger = .8
         if max_val > trigger:
@@ -134,6 +136,9 @@ class Fisher:
             click_location(max_loc[0] + 5, max_loc[1] + 5)
             # Means we caught a fish
             return True
+        if not repeat:
+            time.sleep(3)
+            return self.close_caught_fish(True)
         return False
 
     def sell_fish(self):
@@ -187,6 +192,7 @@ class Fisher:
         self.keyboard.press(keyboard.Key.down)
         time.sleep(2)
         self.keyboard.release(keyboard.Key.down)
+        self.fish_sold = True
 
     # Compare to images return max value / location
     def template_match(self, needle, haystack):
