@@ -184,7 +184,6 @@ class Fisher:
             print(f"There are no fish to sell! (max: {round(max_val, 3)} / {trigger})")
         click_location(200, 500)
         time.sleep(1)
-        click_location(100, 500)
         print("Going back...")
         self.keyboard.press(keyboard.Key.down)
         time.sleep(6.5)
