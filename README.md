@@ -1,7 +1,7 @@
 # Fishington.io Bot - Latest version
- * fishington.io bot using [OpenCV](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) and [NumPy](https://numpy.org/)
- * bot can continue to fish and sell fully automatically
- * on average more than **80 fish / hour**
+ * fishington.io bot using [OpenCV](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html) and [NumPy](https://numpy.org/).
+ * bot can continue to fish and sell fully automatically.
+ * on average more than **80 fish / hour**.
 
 ![botss](https://user-images.githubusercontent.com/48323786/132136574-7aab9df9-e19a-4fcf-ab8e-90d9c45ab57c.gif)
 
