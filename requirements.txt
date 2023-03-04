@@ -4,7 +4,7 @@ astunparse==1.6.3
 atari-py==0.2.9
 backcall==0.2.0
 cachetools==4.2.2
-certifi==2021.5.30
+certifi==2022.12.7
 chardet==4.0.0
 cloudpickle==1.6.0
 colorama==0.4.4
